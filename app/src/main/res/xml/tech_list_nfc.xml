@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Added File Tech List, it allow that tech list can to be to use to read by nfc-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <tech-list>
+<!--        Iso Dep is use to read in base ISO-DEP (ISO 14443-4) -->
+        <tech>android.nfc.tech.IsoDep</tech>
+<!--        Others only declared, but not use to purpose of app-->
+        <tech>android.nfc.tech.NfcA</tech>
+        <tech>android.nfc.tech.NfcB</tech>
+        <tech>android.nfc.tech.NfcF</tech>
+        <tech>android.nfc.tech.NfcV</tech>
+        <tech>android.nfc.tech.Ndef</tech>
+<!--        Not use for this app, deleted if required-->
+
+<!--        <tech>android.nfc.tech.NdefFormatable</tech>-->
+<!--        <tech>android.nfc.tech.MifareClassic</tech>-->
+<!--        <tech>android.nfc.tech.MifareUltralight</tech>-->
+    </tech-list>
+</resources>

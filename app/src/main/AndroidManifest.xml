@@ -21,7 +21,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+<!--            Add the filter to detect when nfc reads a message with Discovered Tag -->
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED"/>
+            </intent-filter>
+<!--            Add the Tech List to activity that use nfc-->
+            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/tech_list_nfc"/>
         </activity>
+
     </application>
 
 </manifest>
