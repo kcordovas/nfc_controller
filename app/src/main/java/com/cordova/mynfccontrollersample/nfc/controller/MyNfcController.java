@@ -94,7 +94,13 @@ public class MyNfcController implements INfcController {
         String[][] techList = new String[][]{};
         // Enable Foreground to read when user activated the nfc
         // and return to Activity, so the app is observing until reading
-        mNfcAdapter.enableForegroundDispatch((Activity) context, pendingIntent, null, techList);
+        try {
+            // Depend how called this, is controller. For example: if called an Fragment
+            // not support the Cast. Test in different context
+            mNfcAdapter.enableForegroundDispatch((Activity) context, pendingIntent, null, techList);
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
