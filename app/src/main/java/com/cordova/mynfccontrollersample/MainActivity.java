@@ -29,8 +29,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        myNfcController.foregroundDispatch();
+        myNfcController.disableForegroundDispatch();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myNfcController.disable();
     }
 
     @Override

@@ -9,4 +9,5 @@ public interface INfcController {
     void activate();
     void foregroundDispatch();
     void getData(Intent intent);
+    void disableForegroundDispatch();
 }

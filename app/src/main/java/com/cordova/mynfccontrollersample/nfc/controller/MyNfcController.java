@@ -124,6 +124,20 @@ public class MyNfcController implements INfcController {
     }
 
     /**
+     * Disable Foreground nfc adapter to don't see more other nfc files
+     */
+    @Override
+    public void disableForegroundDispatch() {
+        try {
+            // Disable ForegroundDispatch to not read in foreground
+            // It's attach with a Activity, with any other, nfc not execute
+            mNfcAdapter.disableForegroundDispatch((Activity) context);
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Verify if the phone support Nfc
      * @return a true if support and a false if not
      */
