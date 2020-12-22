@@ -6,7 +6,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.Ndef;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -48,6 +54,20 @@ public class MyNfcController implements INfcController {
         }
         return myNfcController;
     }
+
+
+    @Override
+    public void getData(Intent intent) {
+        if (intent != null) return;
+        final String action = intent.getAction();
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+            byte[] empty = new byte[0];
+            byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }
+    }
+
+
 
     /**
      * Send to user for NFC configurations and activate the nfc

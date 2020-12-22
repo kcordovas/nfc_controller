@@ -1,6 +1,6 @@
 package com.cordova.mynfccontrollersample.nfc.controller;
 
-import android.content.Context;
+import android.content.Intent;
 
 public interface INfcController {
     boolean isEnabled();
@@ -8,4 +8,5 @@ public interface INfcController {
     void disable();
     void activate();
     void foregroundDispatch();
+    void getData(Intent intent);
 }
