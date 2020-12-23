@@ -15,12 +15,17 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * This Class is to control on NfcAdapter
  * it's use to not repeat coding
  * @author Kevin Córdova
  */
 public class MyNfcController implements INfcController {
+    private static final String TAG = MyNfcController.class.getSimpleName();
     private final Context context;
     private static PendingIntent pendingIntent;
     private static NfcAdapter mNfcAdapter;
@@ -58,13 +63,60 @@ public class MyNfcController implements INfcController {
 
     @Override
     public void getData(Intent intent) {
-        if (intent != null) return;
+        // Get that NFC type is
         final String action = intent.getAction();
-        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-            byte[] empty = new byte[0];
-            byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+            // Get the tag from intent
+            // TEST Mastercard -> Contains IsoDep and NfcA
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+            // TEST --> SELECT COMMAND - ADPU
+            byte[] SELECT_COMMAND = {
+                    (byte) 0x00, // CLA
+                    (byte) 0xA4, // INS
+                    (byte) 0x04, // P1
+                    (byte) 0x00, // P2
+            };
+            IsoDep tagDep = IsoDep.get(tag);
+
+            try {
+                tagDep.connect();
+                byte[] result = tagDep.transceive(SELECT_COMMAND);
+                String strResult = transformByteArrayToHexString(result);
+                Log.d(TAG, "getData: HEX " + strResult);
+                Log.d(TAG, "getData: " + result[0]);
+                Log.d(TAG, "getData: " + (byte) 0x90);
+                Log.d(TAG, "getData: " + result[1]);
+                Log.d(TAG, "getData: " + (byte) 0x00);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    /**
+     * Utility class to convert a byte array to a hexadecimal string.
+     *
+     * @param bytes Bytes to convert
+     * @return String, containing hexadecimal representation.
+     */
+    public static String transformByteArrayToHexString(byte[] bytes) {
+        final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+        char[] hexChars = new char[bytes.length * 2];
+        int v;
+        for ( int j = 0; j < bytes.length; j++ ) {
+            v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    public String byteToHex(byte num) {
+        char[] hexDigits = new char[2];
+        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
+        hexDigits[1] = Character.forDigit((num & 0xF), 16);
+        return new String(hexDigits);
     }
 
 

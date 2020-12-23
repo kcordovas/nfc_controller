@@ -43,6 +43,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent == null) return;
-        Log.d(TAG, "onNewIntent: " + intent.getAction());
+        myNfcController.getData(intent);
     }
 }
