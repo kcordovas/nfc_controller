@@ -15,6 +15,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -61,6 +63,13 @@ public class MyNfcController implements INfcController {
     }
 
 
+    /**
+     * Method to get the intent when NFC read the card
+     * First, detect the Tag type to not read other NFC formats.
+     * Second, Transform intent in a Tag NFC (remember that is Tag only to work with Contacless Payment Card)
+     * Then, With the IsoDep interface, taken the tag and with ADPU command get the Result in format TLV
+     * @param intent is the result of NFC when finish the reading
+     */
     @Override
     public void getData(Intent intent) {
         // Get that NFC type is
@@ -82,7 +91,7 @@ public class MyNfcController implements INfcController {
             try {
                 tagDep.connect();
                 byte[] result = tagDep.transceive(SELECT_COMMAND);
-                String strResult = transformByteArrayToHexString(result);
+                String strResult = TransformUtils.byteArrayToHexString(result);
                 Log.d(TAG, "getData: HEX " + strResult);
                 Log.d(TAG, "getData: " + result[0]);
                 Log.d(TAG, "getData: " + (byte) 0x90);
@@ -93,33 +102,6 @@ public class MyNfcController implements INfcController {
             }
         }
     }
-
-    /**
-     * Utility class to convert a byte array to a hexadecimal string.
-     *
-     * @param bytes Bytes to convert
-     * @return String, containing hexadecimal representation.
-     */
-    public static String transformByteArrayToHexString(byte[] bytes) {
-        final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-        char[] hexChars = new char[bytes.length * 2];
-        int v;
-        for ( int j = 0; j < bytes.length; j++ ) {
-            v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
-    public String byteToHex(byte num) {
-        char[] hexDigits = new char[2];
-        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
-        hexDigits[1] = Character.forDigit((num & 0xF), 16);
-        return new String(hexDigits);
-    }
-
-
 
     /**
      * Send to user for NFC configurations and activate the nfc
