@@ -76,12 +76,17 @@ public class MyNfcController implements INfcController {
             // TEST Mastercard -> Contains IsoDep and NfcA
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-            //
+            // Set Command with PPSE standard, it's use in Contacless card
             CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
+//            CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT);
+            // Create a Parser and send the comand
             MyParserTag parserTag = new MyParserTag(commandApdu);
+            // Send the tag
             parserTag.tag(tag);
             try {
+                // Get the result parser
                 byte[] result = parserTag.parser();
+                Log.d(TAG, "getData: is Visa -> " + parserTag.isVisaCard());
                 Log.d(TAG, "getData: " + TransformUtils.byteArrayToHexString(result));
             } catch (IOException e) {
                 e.printStackTrace();

@@ -3,8 +3,9 @@ package com.cordova.mynfccontrollersample.nfc.parser;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 
-import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
+import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
+import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 
 import java.io.IOException;
 
@@ -47,5 +48,17 @@ public class MyParserTag implements IParserTag {
         isoDep.connect();
         parseData = isoDep.transceive(arrayCommandAdpu);
         return parseData;
+    }
+
+    /**
+     * Verify if the result is a Visa Card
+     * @return true if is Visa and false if not
+     */
+    @Override
+    public boolean isVisaCard() {
+        if (parseData == null) throw new NullPointerException();
+        String res = TransformUtils.byteArrayToHexString(parseData);
+        return res.contains(AidVisaEnum.VISA_ALL_AID.getAidValue()) &&
+                !res.contains(AidVisaEnum.VISA_GP_CARD_MANAGER.getAidValue());
     }
 }
