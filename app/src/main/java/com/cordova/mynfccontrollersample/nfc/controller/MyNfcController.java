@@ -7,19 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
-import android.nfc.tech.Ndef;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
+import com.cordova.mynfccontrollersample.nfc.parser.MyParserTag;
+import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * This Class is to control on NfcAdapter
@@ -79,24 +76,13 @@ public class MyNfcController implements INfcController {
             // TEST Mastercard -> Contains IsoDep and NfcA
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-            // TEST --> SELECT COMMAND - ADPU
-            byte[] SELECT_COMMAND = {
-                    (byte) 0x00, // CLA
-                    (byte) 0xA4, // INS
-                    (byte) 0x04, // P1
-                    (byte) 0x00, // P2
-            };
-            IsoDep tagDep = IsoDep.get(tag);
-
+            //
+            CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
+            MyParserTag parserTag = new MyParserTag(commandApdu);
+            parserTag.tag(tag);
             try {
-                tagDep.connect();
-                byte[] result = tagDep.transceive(SELECT_COMMAND);
-                String strResult = TransformUtils.byteArrayToHexString(result);
-                Log.d(TAG, "getData: HEX " + strResult);
-                Log.d(TAG, "getData: " + result[0]);
-                Log.d(TAG, "getData: " + (byte) 0x90);
-                Log.d(TAG, "getData: " + result[1]);
-                Log.d(TAG, "getData: " + (byte) 0x00);
+                byte[] result = parserTag.parser();
+                Log.d(TAG, "getData: " + TransformUtils.byteArrayToHexString(result));
             } catch (IOException e) {
                 e.printStackTrace();
             }
