@@ -2,7 +2,6 @@ package com.cordova.mynfccontrollersample.nfc.parser;
 
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.util.Log;
 
 import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
@@ -42,7 +41,6 @@ public class MyParserTag implements IParserTag {
         for (String techItem : techList) {
             if (searchTechList.trim().equals(techItem.trim())) isoDep = IsoDep.get(tag);
         }
-        //isoDep = IsoDep.get(tag);
     }
 
     /**

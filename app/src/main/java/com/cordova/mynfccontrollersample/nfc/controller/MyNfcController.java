@@ -79,6 +79,9 @@ public class MyNfcController implements INfcController {
             // Set Command with PPSE standard, it's use in Contacless card
             CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
 //            CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT);
+            // Test this to read a mastercard Card
+//            CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT,
+//                    TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()), 0);
             // Create a Parser and send the comand
             MyParserTag parserTag = new MyParserTag(commandApdu);
             // Send the tag
