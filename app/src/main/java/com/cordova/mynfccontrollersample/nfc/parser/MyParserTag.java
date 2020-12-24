@@ -2,6 +2,7 @@ package com.cordova.mynfccontrollersample.nfc.parser;
 
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.util.Log;
 
 import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
@@ -31,11 +32,17 @@ public class MyParserTag implements IParserTag {
 
     /**
      * Set the Tag with the Iso Dep
+     * Filter by only Iso Dep Tags
      * @param tag is the tag send by NFC controller
      */
     @Override
     public void tag(Tag tag) {
-        isoDep = IsoDep.get(tag);
+        String[] techList = tag.getTechList();
+        String searchTechList = IsoDep.class.getName();
+        for (String techItem : techList) {
+            if (searchTechList.trim().equals(techItem.trim())) isoDep = IsoDep.get(tag);
+        }
+        //isoDep = IsoDep.get(tag);
     }
 
     /**
