@@ -24,7 +24,6 @@ import java.io.IOException;
  * @author Kevin Córdova
  */
 public class MyNfcController implements INfcController {
-    private static final String TAG = MyNfcController.class.getSimpleName();
     private final Context context;
     private static PendingIntent pendingIntent;
     private static NfcAdapter mNfcAdapter;
@@ -73,24 +72,16 @@ public class MyNfcController implements INfcController {
         final String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             // Get the tag from intent
-            // TEST Mastercard -> Contains IsoDep and NfcA
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
             // Set Command with PPSE standard, it's use in Contacless card
             CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
-//            CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT);
-            // Test this to read a mastercard Card
-//            CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT,
-//                    TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()), 0);
-            // Create a Parser and send the comand
             MyParserTag parserTag = new MyParserTag(commandApdu);
             // Send the tag
             parserTag.tag(tag);
             try {
                 // Get the result parser
                 byte[] result = parserTag.parser();
-                Log.d(TAG, "getData: is Visa -> " + parserTag.isVisaCard());
-                Log.d(TAG, "getData: " + TransformUtils.byteArrayToHexString(result));
             } catch (IOException e) {
                 e.printStackTrace();
             }
