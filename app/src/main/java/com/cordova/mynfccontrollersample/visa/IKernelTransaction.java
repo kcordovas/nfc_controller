@@ -2,7 +2,10 @@ package com.cordova.mynfccontrollersample.visa;
 
 import android.content.Context;
 
-public interface IKernelTransaction {
+import com.visa.app.ttpkernel.NfcTransceiver;
+
+public interface IKernelTransaction<T> {
     byte[] getVersion();
-    void doTransaction();
+    void doTransaction(NfcTransceiver nfcTransceiver);
+    void settingTerminalData(T... value);
 }

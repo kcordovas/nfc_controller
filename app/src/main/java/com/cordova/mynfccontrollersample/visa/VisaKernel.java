@@ -6,6 +6,7 @@ import android.util.Log;
 import com.visa.app.ttpkernel.ContactlessConfiguration;
 import com.visa.app.ttpkernel.ContactlessKernel;
 import com.visa.app.ttpkernel.ContactlessResult;
+import com.visa.app.ttpkernel.NfcTransceiver;
 import com.visa.app.ttpkernel.TtpOutcome;
 import com.visa.app.ttpkernel.Version;
 import com.visa.vac.tc.emvconverter.Utils;
@@ -13,11 +14,11 @@ import com.visa.vac.tc.emvconverter.Utils;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VisaKernel implements IKernelTransaction {
+public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
     private static final String TAG = VisaKernel.class.getSimpleName();
 
     private final Context context;
-    private static IKernelTransaction visaKernel;
+    private static IKernelTransaction<TerminalVisaValueMap> visaKernel;
 
     // VISA SDK
     private static ContactlessConfiguration contactlessConfiguration;
@@ -37,7 +38,7 @@ public class VisaKernel implements IKernelTransaction {
      * @param context is the Activity that called to SDK
      * @return the Visa Kernel Object
      */
-    public static IKernelTransaction getInstance(Context context) {
+    public static IKernelTransaction<TerminalVisaValueMap> getInstance(Context context) {
         if (visaKernel == null) {
             contactlessKernel = ContactlessKernel.getInstance(context);
             contactlessConfiguration = ContactlessConfiguration.getInstance();
@@ -51,6 +52,7 @@ public class VisaKernel implements IKernelTransaction {
      * that could to send the user or the app
      * @param terminalVisaValueMaps is a Object in format Key,Value to set TerminalData
      */
+    @Override
     public void settingTerminalData(TerminalVisaValueMap... terminalVisaValueMaps) {
         HashMap<String, byte[]> terminalData = contactlessConfiguration.getTerminalData();
         for (TerminalVisaValueMap terminalValue: terminalVisaValueMaps) {
@@ -72,8 +74,9 @@ public class VisaKernel implements IKernelTransaction {
     }
 
     @Override
-    public void doTransaction() {
-        ContactlessResult contactlessResult = contactlessKernel.performTransaction(null, contactlessConfiguration);
+    public void doTransaction(NfcTransceiver nfcTransceiver) {
+        ContactlessResult contactlessResult = contactlessKernel
+                .performTransaction(nfcTransceiver, contactlessConfiguration);
 
         TtpOutcome outcome = contactlessResult.getFinalOutcome();
         switch (outcome) {

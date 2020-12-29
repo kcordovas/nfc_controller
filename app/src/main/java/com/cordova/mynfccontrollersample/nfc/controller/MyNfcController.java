@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
+import com.cordova.mynfccontrollersample.nfc.listener.INfcListener;
 import com.cordova.mynfccontrollersample.nfc.parser.MyParserTag;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
@@ -30,12 +31,16 @@ public class MyNfcController implements INfcController {
     @SuppressLint("StaticFieldLeak")
     private static MyNfcController myNfcController;
 
+    private INfcListener nfcListener;
+
     /**
      * Constructor
      * @param context is who use the NfcController
+     * @param listener is who listen on the result of Nfc Controller
      */
-    public MyNfcController(Context context) {
+    public MyNfcController(Context context, INfcListener listener) {
         this.context = context;
+        this.nfcListener = listener;
     }
 
     /**
@@ -43,7 +48,7 @@ public class MyNfcController implements INfcController {
      * @param context is the Activity or Fragment that called it
      * @return INfc controller interface that contains object MyNfcController
      */
-    public static INfcController getInstance(Context context) {
+    public static INfcController getInstance(Context context, INfcListener listener) {
         if (myNfcController == null) {
             mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
 
@@ -53,7 +58,7 @@ public class MyNfcController implements INfcController {
                             // Added this Flag
                             // If set, the activity will not be launched if it is already running at the top of the history stack.
                     .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-            return new MyNfcController(context);
+            return new MyNfcController(context, listener);
         }
         return myNfcController;
     }
@@ -82,8 +87,9 @@ public class MyNfcController implements INfcController {
             try {
                 // Get the result parser
                 byte[] result = parserTag.parser();
+                nfcListener.onResult(result);
             } catch (IOException e) {
-                e.printStackTrace();
+                nfcListener.onErrorNfc(e);
             }
         }
     }
@@ -137,8 +143,8 @@ public class MyNfcController implements INfcController {
             // Depend how called this, is controller. For example: if called an Fragment
             // not support the Cast. Test in different context
             mNfcAdapter.enableForegroundDispatch((Activity) context, pendingIntent, null, techList);
-        } catch (ClassCastException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            nfcListener.onErrorNfc(e);
         }
     }
 
@@ -152,7 +158,7 @@ public class MyNfcController implements INfcController {
             // It's attach with a Activity, with any other, nfc not execute
             mNfcAdapter.disableForegroundDispatch((Activity) context);
         } catch (ClassCastException e) {
-            e.printStackTrace();
+            nfcListener.onErrorNfc(e);
         }
     }
 
