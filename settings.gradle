@@ -1,2 +1,3 @@
+include ':TTPKernelv2-full-release'
 include ':app'
 rootProject.name = "MyNfcControllerSample"
