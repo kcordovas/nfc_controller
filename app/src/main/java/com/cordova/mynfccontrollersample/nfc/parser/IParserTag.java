@@ -8,4 +8,5 @@ public interface IParserTag {
     void tag(Tag tag);
     byte[] parser() throws IOException;
     boolean isVisaCard();
+    void cancel();
 }

@@ -66,4 +66,16 @@ public class MyParserTag implements IParserTag {
         return res.contains(AidVisaEnum.VISA_ALL_AID.getAidValue()) &&
                 !res.contains(AidVisaEnum.VISA_GP_CARD_MANAGER.getAidValue());
     }
+
+    /**
+     * Disable all interface data
+     */
+    @Override
+    public void cancel() {
+        try {
+            isoDep.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
