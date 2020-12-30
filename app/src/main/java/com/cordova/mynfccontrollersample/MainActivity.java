@@ -9,6 +9,7 @@ import android.util.Log;
 import com.cordova.mynfccontrollersample.nfc.controller.INfcController;
 import com.cordova.mynfccontrollersample.nfc.controller.MyNfcController;
 import com.cordova.mynfccontrollersample.nfc.listener.INfcListener;
+import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.cordova.mynfccontrollersample.visa.IKernelTransaction;
 import com.cordova.mynfccontrollersample.visa.TerminalVisaValueMap;
 import com.cordova.mynfccontrollersample.visa.VisaKernel;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
                 new TerminalVisaValueMap("9F39", new byte[]{0x07})
         );
         NfcTransceiver visaNfcTransceiver = new MyVisaNfcTransceiver(resultData);
-        //visaKernel.doTransaction(visaNfcTransceiver);
+        visaKernel.doTransaction(visaNfcTransceiver);
     }
 
     @Override

@@ -101,8 +101,8 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
             String key = entry.getKey();
             if (entry.getValue() != null) {
                 String value = Utils.getHexString(entry.getValue());
-                Log.d(TAG, "doTransaction: key ->" + key);
-                Log.d(TAG, "doTransaction: value->" + value);
+                Log.d(TAG, "doTransaction: Card Data key ->" + key);
+                Log.d(TAG, "doTransaction: Card Data value->" + value);
             }
         }
         HashMap<String, byte[]> internalData = contactlessResult.getInternalData();
@@ -110,8 +110,8 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
             if (data.getValue() != null) {
                 String key = data.getKey();
                 String value = Utils.getHexString(data.getValue());
-                Log.d(TAG, "doTransaction: key->" + key);
-                Log.d(TAG, "doTransaction: value->" + value);
+                Log.d(TAG, "doTransaction: internal Data key->" + key);
+                Log.d(TAG, "doTransaction: internal Data value->" + value);
             }
         }
         if (contactlessResult.getLastApdu() != null &&
