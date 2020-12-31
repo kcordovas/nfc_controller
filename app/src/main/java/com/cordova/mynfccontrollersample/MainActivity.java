@@ -9,6 +9,7 @@ import android.util.Log;
 import com.cordova.mynfccontrollersample.nfc.controller.INfcController;
 import com.cordova.mynfccontrollersample.nfc.controller.MyNfcController;
 import com.cordova.mynfccontrollersample.nfc.listener.INfcListener;
+import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.cordova.mynfccontrollersample.visa.IKernelTransaction;
 import com.cordova.mynfccontrollersample.visa.TerminalVisaValueMap;
 import com.cordova.mynfccontrollersample.visa.VisaKernel;
@@ -80,9 +81,8 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
                 // SET AID
                 // new TerminalVisaValueMap("4F", TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()))
         );
-//        byte[] res = TransformUtils.hexStringToByteArray("6F39840E325041592E5359532E4444463031A527BF0C2461224F07A000000003101050105649534120434F4E544143544C4553538701019F2A01039000");
+        Log.d(TAG, "onResult: Result NFC controller ->" + TransformUtils.byteArrayToHexString(resultData));
         NfcTransceiver visaNfcTransceiver = new MyVisaNfcTransceiver(resultData);
-//        NfcTransceiver visaNfcTransceiver = new MyVisaNfcTransceiver(res);
         visaKernel.doTransaction(visaNfcTransceiver);
     }
 
