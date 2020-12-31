@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
                 // Set currency code
                 new TerminalVisaValueMap("5F2A", new byte[]{0x08, 0x40}), // US dollar
                 // Terminal type
+                // https://cert.api2.heartlandportico.com/Gateway/PorticoDevGuide/build/PorticoDeveloperGuide/PDL%20Response%20Table%2030%20-%20Terminal%20Data.html
                 new TerminalVisaValueMap("9F35", new byte[]{0x22}),
                 // Transaction type
                 new TerminalVisaValueMap("9C", new byte[]{0x20}),
