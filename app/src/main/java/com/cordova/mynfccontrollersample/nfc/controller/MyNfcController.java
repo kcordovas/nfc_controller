@@ -78,7 +78,8 @@ public class MyNfcController implements INfcController {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             // Get the tag from intent
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
+            nfcListener.onResult(tag);
+            /*
             // Set Command with PPSE standard, it's use in Contacless card
             CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
             MyParserTag parserTag = new MyParserTag(commandApdu);
@@ -87,10 +88,10 @@ public class MyNfcController implements INfcController {
             try {
                 // Get the result parser
                 byte[] result = parserTag.parser();
-                nfcListener.onResult(result);
             } catch (IOException e) {
                 nfcListener.onErrorNfc(e);
             }
+             */
         }
     }
 

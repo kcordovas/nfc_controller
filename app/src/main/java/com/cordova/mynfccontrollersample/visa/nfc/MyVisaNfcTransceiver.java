@@ -1,38 +1,74 @@
 package com.cordova.mynfccontrollersample.visa.nfc;
 
+import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.util.Log;
 
+import com.cordova.mynfccontrollersample.nfc.enums.AidMasterCardEnum;
+import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
+import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
+import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.visa.app.ttpkernel.NfcTransceiver;
 
+import java.io.IOException;
+
 public class MyVisaNfcTransceiver implements NfcTransceiver {
     private static final String TAG = MyVisaNfcTransceiver.class.getSimpleName();
-    public MyVisaNfcTransceiver(byte[] resultData) {
-        //transceive(resultData);
+
+    private IsoDep mIsoDep;
+
+    public MyVisaNfcTransceiver (Tag tag) throws IOException {
+        String[] techList = tag.getTechList();
+        String searchTechList = IsoDep.class.getName();
+        for (String techItem : techList) {
+            if (searchTechList.trim().equals(techItem.trim())) mIsoDep = IsoDep.get(tag);
+        }
+        mIsoDep.connect();
     }
 
     @Override
     public byte[] transceive(byte[] txData) {
         Log.d(TAG, "transceive: " + TransformUtils.byteArrayToHexString(txData));
+        CommandApdu commandApdu;
+        byte[] result = new byte[0];
+        try {
+            // PPSE
+            if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4 && txData[4] == (byte)0x0E) {
+                commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
+                result = mIsoDep.transceive(commandApdu.getBytes());
+            } else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4 && (txData[4] == (byte)0x07) || (txData[4] == (byte)0x08) || (txData[4] == (byte)0x09)) {
+                // SELECT AID
+                commandApdu = new CommandApdu(CommandEnum.SELECT,
+                        TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()),
+                        0);
+                result = mIsoDep.transceive(commandApdu.getBytes());
+            } else if (txData[0] == (byte)0x80 && txData[1] == (byte)0xA8 && txData[2] == (byte)0x00) {
+                // GPO
+                commandApdu = new CommandApdu(CommandEnum.GPO, new byte[]{(byte) 0x083, (byte) 0x00}, 0);
+                result = mIsoDep.transceive(commandApdu.getBytes());
+            } else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xB2) {
+                //READ RECORD
+                commandApdu = new CommandApdu(CommandEnum.READ_RECORD);
+                result = mIsoDep.transceive(commandApdu.getBytes());
+            }
+        } catch (IOException e) { e.printStackTrace(); }
 
-        // TODO CHANGE with Real Data
-        String res = "";
-        // PPSE
-        if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4 && txData[4] == (byte)0x0E) {
-            res = "6F39840E325041592E5359532E4444463031A527BF0C2461224F07A000000003101050105649534120434F4E544143544C4553538701019F2A01039000";
-        } else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4 && (txData[4] == (byte)0x07) || (txData[4] == (byte)0x08) || (txData[4] == (byte)0x09)) {
-            // SELECT AID
-            res = "6F438407A0000000031010A53850105649534120434F4E544143544C4553539F38189F66049F02069F03069F1A0295055F2A029A039C019F3704BF0C089F5A0510084008409000";
-        } else if (txData[0] == (byte)0x80 && txData[1] == (byte)0xA8 && txData[2] == (byte)0x00) {
-            // GPO
-            res = "7781918202002094040805050057104761731000000027D2412201190582545F20135649534120434445542033302F4341524430325F3401019F10201F220100A00000000000000000000000000000000000000000000000000000009F260896991101193D90D29F2701809F360200019F6C0200009F6E04207000009F7C0C010A434152440244474991159F5D060000000000009000";
-        }
-
-        return TransformUtils.hexStringToByteArray(res);
+        Log.d(TAG, "transceive: Data ->" + TransformUtils.byteArrayToHexString(result));
+        return result;
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        Log.d(TAG, "destroy: ");
+        if (mIsoDep != null) {
+            try {
+                mIsoDep.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public boolean isCardPresent() {

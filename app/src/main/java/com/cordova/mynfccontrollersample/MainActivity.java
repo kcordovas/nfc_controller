@@ -3,12 +3,15 @@ package com.cordova.mynfccontrollersample;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.cordova.mynfccontrollersample.nfc.controller.INfcController;
 import com.cordova.mynfccontrollersample.nfc.controller.MyNfcController;
+import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.listener.INfcListener;
+import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.cordova.mynfccontrollersample.visa.IKernelTransaction;
 import com.cordova.mynfccontrollersample.visa.TerminalVisaValueMap;
@@ -16,9 +19,12 @@ import com.cordova.mynfccontrollersample.visa.VisaKernel;
 import com.cordova.mynfccontrollersample.visa.nfc.MyVisaNfcTransceiver;
 import com.visa.app.ttpkernel.NfcTransceiver;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity implements INfcListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private INfcController myNfcController;
+    IKernelTransaction<TerminalVisaValueMap> visaKernel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
     protected void onDestroy() {
         super.onDestroy();
         myNfcController.disable();
+        visaKernel = null;
+
     }
 
     @Override
@@ -55,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
 
     // NFC Listener
     @Override
-    public void onResult(byte[] resultData) {
-        IKernelTransaction<TerminalVisaValueMap> visaKernel = VisaKernel.getInstance(this);
+    public void onResult(Tag tag) {
+        visaKernel = VisaKernel.getInstance(this);
         visaKernel.settingTerminalData(
                 // Set the amount
                 // new TerminalVisaValueMap("9F02", new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06}),
@@ -81,8 +89,13 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
                 // SET AID
                 // new TerminalVisaValueMap("4F", TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()))
         );
-        Log.d(TAG, "onResult: Result NFC controller ->" + TransformUtils.byteArrayToHexString(resultData));
-        NfcTransceiver visaNfcTransceiver = new MyVisaNfcTransceiver(resultData);
+        NfcTransceiver visaNfcTransceiver = null;
+        try {
+            visaNfcTransceiver = new MyVisaNfcTransceiver(tag);
+            visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0).getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         visaKernel.doTransaction(visaNfcTransceiver);
     }
 
