@@ -17,19 +17,21 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
     private static final String TAG = MyVisaNfcTransceiver.class.getSimpleName();
 
     private IsoDep mIsoDep;
+    public String aidCard;
 
-    public MyVisaNfcTransceiver (Tag tag) throws IOException {
+    public MyVisaNfcTransceiver (Tag tag, String aidCard) throws IOException {
         String[] techList = tag.getTechList();
         String searchTechList = IsoDep.class.getName();
         for (String techItem : techList) {
             if (searchTechList.trim().equals(techItem.trim())) mIsoDep = IsoDep.get(tag);
         }
+        this.aidCard = aidCard;
         mIsoDep.connect();
     }
 
     @Override
     public byte[] transceive(byte[] txData) {
-        Log.d(TAG, "transceive: " + TransformUtils.byteArrayToHexString(txData));
+        Log.d(TAG, "transceive: Command" + TransformUtils.byteArrayToHexString(txData));
         CommandApdu commandApdu;
         byte[] result = new byte[0];
         try {
@@ -37,17 +39,19 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
             if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4 && txData[4] == (byte)0x0E) {
                 commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
                 result = mIsoDep.transceive(commandApdu.getBytes());
-            } else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4 && (txData[4] == (byte)0x07) || (txData[4] == (byte)0x08) || (txData[4] == (byte)0x09)) {
+            } else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4) {
                 // SELECT AID
-                commandApdu = new CommandApdu(CommandEnum.SELECT,
-                        TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()),
-                        0);
-                result = mIsoDep.transceive(commandApdu.getBytes());
+                if ((txData[4] == (byte)0x07) || (txData[4] == (byte)0x08) || (txData[4] == (byte)0x09)) {
+                    commandApdu = new CommandApdu(CommandEnum.SELECT,
+                            TransformUtils.hexStringToByteArray(aidCard),
+                            0);
+                    result = mIsoDep.transceive(commandApdu.getBytes());
+                }
             } else if (txData[0] == (byte)0x80 && txData[1] == (byte)0xA8 && txData[2] == (byte)0x00) {
                 // GPO
                 commandApdu = new CommandApdu(CommandEnum.GPO, new byte[]{(byte) 0x083, (byte) 0x00}, 0);
                 result = mIsoDep.transceive(commandApdu.getBytes());
-            } else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xB2) {
+            }  else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xB2) {
                 //READ RECORD
                 commandApdu = new CommandApdu(CommandEnum.READ_RECORD);
                 result = mIsoDep.transceive(commandApdu.getBytes());
@@ -73,5 +77,13 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
     @Override
     public boolean isCardPresent() {
         return true;
+    }
+
+    public String getAidCard() {
+        return aidCard;
+    }
+
+    public void setAidCard(String aidCard) {
+        this.aidCard = aidCard;
     }
 }

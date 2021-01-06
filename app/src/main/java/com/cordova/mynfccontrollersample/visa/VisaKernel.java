@@ -122,6 +122,7 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
             Log.d(TAG, "doTransaction: Last SW -> " + lastSW);
         }
 
+        nfcTransceiver.destroy();
     }
 
     /**

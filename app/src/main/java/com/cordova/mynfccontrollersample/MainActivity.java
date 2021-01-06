@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.cordova.mynfccontrollersample.nfc.controller.INfcController;
 import com.cordova.mynfccontrollersample.nfc.controller.MyNfcController;
+import com.cordova.mynfccontrollersample.nfc.enums.AidMasterCardEnum;
+import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.listener.INfcListener;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
@@ -16,10 +18,12 @@ import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.cordova.mynfccontrollersample.visa.IKernelTransaction;
 import com.cordova.mynfccontrollersample.visa.TerminalVisaValueMap;
 import com.cordova.mynfccontrollersample.visa.VisaKernel;
+import com.cordova.mynfccontrollersample.visa.VisaTerminalEnum;
 import com.cordova.mynfccontrollersample.visa.nfc.MyVisaNfcTransceiver;
 import com.visa.app.ttpkernel.NfcTransceiver;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements INfcListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -68,31 +72,48 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
         visaKernel.settingTerminalData(
                 // Set the amount
                 // new TerminalVisaValueMap("9F02", new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06}),
-                new TerminalVisaValueMap("9F02", new byte[]{0x00, 0x00, 0x00, 0x01, 0x00, 0x00}),
+                new TerminalVisaValueMap(VisaTerminalEnum.AMOUNT_AUTHORISED.getTag(), new byte[]{0x00, 0x00, 0x00, 0x01, 0x00, 0x00}),
                 // Set terminal country code
                 //new TerminalVisaValueMap("9F1A", new byte[]{0x08, 0x40}), // US
-                new TerminalVisaValueMap("9F1A", new byte[]{0x02, 0x18}), // Ecuador
+                new TerminalVisaValueMap(VisaTerminalEnum.TERMINAL_COUNTRY_CODE.getTag(), new byte[]{0x02, 0x18}), // Ecuador
                 // Set currency code
-                new TerminalVisaValueMap("5F2A", new byte[]{0x08, 0x40}), // US dollar
+                new TerminalVisaValueMap(VisaTerminalEnum.TRANSACTION_CURRENCY_CODE.getTag(), new byte[]{0x08, 0x40}), // US dollar
                 // Terminal type
                 // https://cert.api2.heartlandportico.com/Gateway/PorticoDevGuide/build/PorticoDeveloperGuide/PDL%20Response%20Table%2030%20-%20Terminal%20Data.html
-                new TerminalVisaValueMap("9F35", new byte[]{0x22}),
+                new TerminalVisaValueMap(VisaTerminalEnum.TERMINAL_TYPE.getTag(), new byte[]{0x22}),
                 // Transaction type
-                new TerminalVisaValueMap("9C", new byte[]{0x20}),
+                new TerminalVisaValueMap(VisaTerminalEnum.TRANSACTION_TYPE.getTag(), new byte[]{0x00}),
                 // TTQ
                 // https://www.eftlab.com/the-use-of-ctqs-and-ttqs-in-nfc-transactions/
-                new TerminalVisaValueMap("9F66", new byte[]{(byte)0x20, (byte)0x80, (byte)0x40, (byte)0x00}),
+                // https://stackoverflow.com/questions/55337693/generate-get-processing-options-gpo-for-emv-card-apdu-by-pdol
+                new TerminalVisaValueMap(VisaTerminalEnum.TERMINAL_TRANSACTION_QUALIFIERS_TTQ.getTag(), new byte[]{(byte)0x20, (byte)0x80, (byte)0x40, (byte)0x00}),
+                // Reader CVM Required Limit
+                new TerminalVisaValueMap(VisaTerminalEnum.READER_CVM_REQUIRED_LIMIT.getTag(),
+                        new byte[]{(byte) 0x99, (byte) 0x99, (byte) 0x99, (byte) 0x99, (byte) 0x99, (byte) 0x99}),
+                // Merchant Name and Location
+                new TerminalVisaValueMap(VisaTerminalEnum.MERCHANT_NAME_AND_LOCATION.getTag(),
+                        // This is only example
+                        TransformUtils.hexStringToByteArray("31303732312057616C6B65722053742E20437970726573732C204341202C5553412E")),
+                // AID
+//                new TerminalVisaValueMap(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(), TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()))
+                new TerminalVisaValueMap(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(),
+                        TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()))
+                // Optional
                 // PAN
                 // http://www.fintrnmsgtool.com/iso-point-of-service-entry-mode.html
-                new TerminalVisaValueMap("9F39", new byte[]{0x07})
-                // Optional
-                // SET AID
-                // new TerminalVisaValueMap("4F", TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()))
+                //new TerminalVisaValueMap("9F39", new byte[]{0x07})
         );
         NfcTransceiver visaNfcTransceiver = null;
         try {
-            visaNfcTransceiver = new MyVisaNfcTransceiver(tag);
+//            visaNfcTransceiver = new MyVisaNfcTransceiver(tag, AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue());
+            visaNfcTransceiver = new MyVisaNfcTransceiver(tag, AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue());
             visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0).getBytes());
+            visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT,
+//                    TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()),
+                    TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()),
+                    0).getBytes());
+            visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.GPO, new byte[]{(byte) 0x083, (byte) 0x00}, 0).getBytes());
+            visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.READ_RECORD).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
