@@ -17,15 +17,13 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
     private static final String TAG = MyVisaNfcTransceiver.class.getSimpleName();
 
     private IsoDep mIsoDep;
-    public String aidCard;
 
-    public MyVisaNfcTransceiver (Tag tag, String aidCard) throws IOException {
+    public MyVisaNfcTransceiver (Tag tag) throws IOException {
         String[] techList = tag.getTechList();
         String searchTechList = IsoDep.class.getName();
         for (String techItem : techList) {
             if (searchTechList.trim().equals(techItem.trim())) mIsoDep = IsoDep.get(tag);
         }
-        this.aidCard = aidCard;
         mIsoDep.connect();
     }
 
@@ -43,7 +41,7 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
                 // SELECT AID
                 if ((txData[4] == (byte)0x07) || (txData[4] == (byte)0x08) || (txData[4] == (byte)0x09)) {
                     commandApdu = new CommandApdu(CommandEnum.SELECT,
-                            TransformUtils.hexStringToByteArray(aidCard),
+                            TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()),
                             0);
 //                    result = mIsoDep.transceive(commandApdu.getBytes());
                     result = mIsoDep.transceive(txData);
@@ -76,15 +74,5 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
     }
 
     @Override
-    public boolean isCardPresent() {
-        return true;
-    }
-
-    public String getAidCard() {
-        return aidCard;
-    }
-
-    public void setAidCard(String aidCard) {
-        this.aidCard = aidCard;
-    }
+    public boolean isCardPresent() { return true; }
 }

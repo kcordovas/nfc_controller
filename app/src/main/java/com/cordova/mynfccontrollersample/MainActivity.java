@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
         NfcTransceiver visaNfcTransceiver = null;
         try {
 //            visaNfcTransceiver = new MyVisaNfcTransceiver(tag, AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue());
-            visaNfcTransceiver = new MyVisaNfcTransceiver(tag, AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue());
+            visaNfcTransceiver = new MyVisaNfcTransceiver(tag);
             visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0).getBytes());
             visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT,
 //                    TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()),
