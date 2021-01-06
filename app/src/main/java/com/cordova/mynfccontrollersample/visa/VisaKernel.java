@@ -3,6 +3,10 @@ package com.cordova.mynfccontrollersample.visa;
 import android.content.Context;
 import android.util.Log;
 
+import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
+import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
+import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
+import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.visa.app.ttpkernel.ContactlessConfiguration;
 import com.visa.app.ttpkernel.ContactlessKernel;
 import com.visa.app.ttpkernel.ContactlessResult;
@@ -11,6 +15,7 @@ import com.visa.app.ttpkernel.TtpOutcome;
 import com.visa.app.ttpkernel.Version;
 import com.visa.vac.tc.emvconverter.Utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +28,9 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
     // VISA SDK
     private static ContactlessConfiguration contactlessConfiguration;
     private static ContactlessKernel contactlessKernel;
+
+    // Array Candidates
+    private static ArrayList<byte[]> listCandidateAid;
 
 
     /**
@@ -43,6 +51,7 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
             contactlessKernel = ContactlessKernel.getInstance(context);
             contactlessConfiguration = ContactlessConfiguration.getInstance();
             visaKernel = new VisaKernel(context);
+            listCandidateAid = new ArrayList<>();
         }
         return visaKernel;
     }
@@ -58,23 +67,58 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
         for (TerminalVisaValueMap terminalValue: terminalVisaValueMaps) {
             terminalData.put(terminalValue.getKey(), terminalValue.getValue());
         }
-        /*
-        terminalData.put("9F02", new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06}); // set the amount
-        terminalData.put("9F1A", new byte[]{0x08, 0x40}); // set terminal country code
-        terminalData.put("5F2A", new byte[]{0x08, 0x40}); // set currency code
-        terminalData.put("9F35", new byte[]{0x22}); //Terminal Type
-        terminalData.put("9C", new byte[]{0x20}); //Transaction Type
-        terminalData.put("9F66", new byte[]{(byte)0x20, (byte)0x80, (byte)0x40, (byte)0x00}); //TTQ
-        terminalData.put("9F39", new byte[]{0x07});
-        // SELECT PPSE ADPU command
-        // Process PPSE Response
-        terminalData.put("4F", new byte[]{(byte)0xA0, 0x00, 0x00, 0x00, 0x03, 0x10, 0x10}); // set the selected aid
-         */
         contactlessConfiguration.setTerminalData(terminalData);
     }
 
     @Override
+    public void nextCandidate(int nextCandidate) {
+        contactlessConfiguration = ContactlessConfiguration.getInstance();
+        HashMap<String, byte[]> terminalMap = contactlessConfiguration.getTerminalData();
+        terminalMap.put(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(), listCandidateAid.get(nextCandidate));
+    }
+
+    /**
+     * Set List Aid Candidates that they're unique to use in this app
+     * @param aidCandidates is a dynamic String array that the app set when configure the terminal
+     */
+    @Override
+    public void setAidListCandidate(String... aidCandidates) {
+        for (String candidate: aidCandidates) {
+            listCandidateAid.add(TransformUtils.hexStringToByteArray(candidate));
+        }
+    }
+
+    @Override
     public void doTransaction(NfcTransceiver nfcTransceiver) {
+        boolean continueSelection = true;
+        int indexCandidate = 0;
+        int limitCandidate = listCandidateAid.size();
+        nfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0).getBytes());
+        while (continueSelection) {
+            byte[] aidConsultResponse = nfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT,
+                    listCandidateAid.get(indexCandidate),
+                    0).getBytes());
+            Log.d(TAG, "doTransaction: Aid Cuestion"  + TransformUtils.byteArrayToHexString(aidConsultResponse));
+            Log.d(TAG, "doTransaction: index" + indexCandidate );
+            Log.d(TAG, "doTransaction: total" + limitCandidate);
+            if (aidConsultResponse[0] == (byte) 0x6A && aidConsultResponse[1] == (byte) 0x82) {
+                if (indexCandidate < limitCandidate) {
+                    nextCandidate(indexCandidate);
+                    continueSelection = true;
+                } else {
+                    continueSelection = false;
+                }
+                indexCandidate++;
+            } else {
+                continueSelection = false;
+            }
+        }
+
+        contactlessConfiguration = ContactlessConfiguration.getInstance();
+        HashMap<String, byte[]> terminalMap = contactlessConfiguration.getTerminalData();
+        terminalMap.put(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(), listCandidateAid.get(indexCandidate));
+        contactlessConfiguration.setTerminalData(terminalMap);
+
         ContactlessResult contactlessResult = contactlessKernel
                 .performTransaction(nfcTransceiver, contactlessConfiguration);
 

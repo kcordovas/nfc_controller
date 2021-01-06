@@ -103,6 +103,20 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
                 // http://www.fintrnmsgtool.com/iso-point-of-service-entry-mode.html
                 //new TerminalVisaValueMap("9F39", new byte[]{0x07})
         );
+        visaKernel.setAidListCandidate(
+                /*AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue(),
+                AidVisaEnum.VISA_CREDIT.getAidValue(),
+                AidVisaEnum.VISA_DEBIT.getAidValue(),
+                AidVisaEnum.VISA_ELECTRON.getAidValue(),
+                AidVisaEnum.VISA_PLUS.getAidValue()*/
+                AidMasterCardEnum.MASTER_CARD_CREDIT.getAidValue(),
+                AidMasterCardEnum.MASTER_CARD_CREDIT_2.getAidValue(),
+                AidMasterCardEnum.MASTER_CARD_MAESTRO_DEBIT.getAidValue(),
+                AidMasterCardEnum.MASTER_CARD_MAESTRO_DEBIT_2.getAidValue(),
+                AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue(),
+                AidMasterCardEnum.MASTER_CARD_SPECIFIC.getAidValue()
+
+        );
         NfcTransceiver visaNfcTransceiver = null;
         try {
 //            visaNfcTransceiver = new MyVisaNfcTransceiver(tag, AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue());

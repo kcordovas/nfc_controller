@@ -45,7 +45,8 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
                     commandApdu = new CommandApdu(CommandEnum.SELECT,
                             TransformUtils.hexStringToByteArray(aidCard),
                             0);
-                    result = mIsoDep.transceive(commandApdu.getBytes());
+//                    result = mIsoDep.transceive(commandApdu.getBytes());
+                    result = mIsoDep.transceive(txData);
                 }
             } else if (txData[0] == (byte)0x80 && txData[1] == (byte)0xA8 && txData[2] == (byte)0x00) {
                 // GPO
