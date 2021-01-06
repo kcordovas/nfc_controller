@@ -1,4 +1,4 @@
-package com.cordova.mynfccontrollersample.visa;
+package com.cordova.mynfccontrollersample.visa.enums;
 
 public enum VisaTerminalEnum {
     /**

@@ -3,10 +3,10 @@ package com.cordova.mynfccontrollersample.visa;
 import android.content.Context;
 import android.util.Log;
 
-import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
+import com.cordova.mynfccontrollersample.visa.enums.VisaTerminalEnum;
 import com.visa.app.ttpkernel.ContactlessConfiguration;
 import com.visa.app.ttpkernel.ContactlessKernel;
 import com.visa.app.ttpkernel.ContactlessResult;

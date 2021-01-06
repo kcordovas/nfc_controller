@@ -18,12 +18,12 @@ import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.cordova.mynfccontrollersample.visa.IKernelTransaction;
 import com.cordova.mynfccontrollersample.visa.TerminalVisaValueMap;
 import com.cordova.mynfccontrollersample.visa.VisaKernel;
-import com.cordova.mynfccontrollersample.visa.VisaTerminalEnum;
+import com.cordova.mynfccontrollersample.visa.enums.CityCodeEnum;
+import com.cordova.mynfccontrollersample.visa.enums.VisaTerminalEnum;
 import com.cordova.mynfccontrollersample.visa.nfc.MyVisaNfcTransceiver;
 import com.visa.app.ttpkernel.NfcTransceiver;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements INfcListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
                 new TerminalVisaValueMap(VisaTerminalEnum.AMOUNT_AUTHORISED.getTag(), new byte[]{0x00, 0x00, 0x00, 0x01, 0x00, 0x00}),
                 // Set terminal country code
                 //new TerminalVisaValueMap("9F1A", new byte[]{0x08, 0x40}), // US
-                new TerminalVisaValueMap(VisaTerminalEnum.TERMINAL_COUNTRY_CODE.getTag(), new byte[]{0x02, 0x18}), // Ecuador
+                new TerminalVisaValueMap(VisaTerminalEnum.TERMINAL_COUNTRY_CODE.getTag(), CityCodeEnum.ECUADOR.getValue()), // Ecuador
                 // Set currency code
                 new TerminalVisaValueMap(VisaTerminalEnum.TRANSACTION_CURRENCY_CODE.getTag(), new byte[]{0x08, 0x40}), // US dollar
                 // Terminal type
