@@ -91,10 +91,13 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
     @Override
     public void doTransaction(NfcTransceiver nfcTransceiver) {
         boolean continueSelection = true;
+//        int indexCandidate = 0;
         int indexCandidate = 0;
         int limitCandidate = listCandidateAid.size();
-        nfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0).getBytes());
+        ContactlessResult contactlessResult = null;
+//        nfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0).getBytes());
         while (continueSelection) {
+            /*
             byte[] aidConsultResponse = nfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT,
                     listCandidateAid.get(indexCandidate),
                     0).getBytes());
@@ -112,8 +115,58 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
             } else {
                 continueSelection = false;
             }
-        }
+             */
 
+            // TEST
+            contactlessConfiguration = ContactlessConfiguration.getInstance();
+            HashMap<String, byte[]> terminalMap = contactlessConfiguration.getTerminalData();
+            terminalMap.put(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(), listCandidateAid.get(indexCandidate));
+            contactlessConfiguration.setTerminalData(terminalMap);
+
+            contactlessResult = contactlessKernel
+                    .performTransaction(nfcTransceiver, contactlessConfiguration);
+
+            TtpOutcome outcome = contactlessResult.getFinalOutcome();
+            switch (outcome) {
+                case COMPLETED:
+                    Log.d(TAG, "doTransaction: completed");
+                    break;
+                case DECLINED:
+                    Log.d(TAG, "doTransaction: declined");
+                    break;
+                case ABORTED:
+                    Log.d(TAG, "doTransaction: aborted");
+                    break;
+                case TRYNEXT:
+                    Log.d(TAG, "doTransaction: trynext");
+                    if (indexCandidate < limitCandidate) {
+                        nextCandidate(indexCandidate);
+                        continueSelection = true;
+                        Log.d(TAG, "doTransaction: Continue Try, index" + indexCandidate);
+                        Log.d(TAG, "doTransaction: Limit" + limitCandidate);
+                        indexCandidate++;
+                    } else {
+                        continueSelection = false;
+                        Log.d(TAG, "doTransaction: Over Limit" );
+                    }
+                    break;
+                case SELECTAGAIN:
+                    Log.d(TAG, "doTransaction: select again");
+                    break;
+            }
+
+            if (TtpOutcome.TRYNEXT != outcome) {
+                Log.d(TAG, "doTransaction: Find AID");
+                continueSelection = false;
+            }
+            if (indexCandidate == limitCandidate) {
+                Log.d(TAG, "doTransaction: Not found AID");
+                continueSelection = false;
+            }
+        }
+        Log.d(TAG, "doTransaction: Finish index" + indexCandidate);
+
+        /*
         contactlessConfiguration = ContactlessConfiguration.getInstance();
         HashMap<String, byte[]> terminalMap = contactlessConfiguration.getTerminalData();
         terminalMap.put(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(), listCandidateAid.get(indexCandidate));
@@ -140,6 +193,8 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
                 Log.d(TAG, "doTransaction: select again");
                 break;
         }
+
+         */
         HashMap<String, byte[]> cardData = contactlessResult.getData();
         for (Map.Entry<String, byte[]> entry: cardData.entrySet()) {
             String key = entry.getKey();
@@ -165,6 +220,8 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
             Log.d(TAG, "doTransaction: Last Adpu -> " + lastAdpu);
             Log.d(TAG, "doTransaction: Last SW -> " + lastSW);
         }
+
+
 
         nfcTransceiver.destroy();
     }
