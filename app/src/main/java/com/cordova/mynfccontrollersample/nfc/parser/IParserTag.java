@@ -5,7 +5,8 @@ import android.nfc.Tag;
 import java.io.IOException;
 
 public interface IParserTag {
-    void tag(Tag tag);
+    void tag(Tag tag) throws IOException;
     byte[] parser() throws IOException;
-    boolean isVisaCard();
+    void disconnect() throws IOException;
+    byte[] transceive(byte[] commandAdpu) throws IOException;
 }

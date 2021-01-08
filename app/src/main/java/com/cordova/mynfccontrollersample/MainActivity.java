@@ -7,8 +7,10 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.cordova.mynfccontrollersample.mastercard.enums.AidMasterCardEnum;
 import com.cordova.mynfccontrollersample.nfc.controller.INfcController;
 import com.cordova.mynfccontrollersample.nfc.controller.MyNfcController;
+import com.cordova.mynfccontrollersample.nfc.parser.MyParserTag;
 import com.cordova.mynfccontrollersample.visa.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.listener.INfcListener;
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
         setContentView(R.layout.activity_main);
         myNfcController = MyNfcController.getInstance(this, this);
 
-        findViewById(R.id.button_nfc).setOnClickListener(v -> myNfcController.activate());
+        findViewById(R.id.button_nfc).setOnClickListener(v -> myNfcController.activate(""));
     }
 
     @Override
@@ -119,11 +121,16 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
         NfcTransceiver visaNfcTransceiver = null;
         try {
 //            visaNfcTransceiver = new MyVisaNfcTransceiver(tag, AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue());
-            visaNfcTransceiver = new MyVisaNfcTransceiver(tag);
+//            visaNfcTransceiver = new MyVisaNfcTransceiver(tag);
+
+            MyParserTag myParserTag = new MyParserTag(tag);
+            boolean isMastercardClassic = myParserTag.isAidSelected(TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()));
+            Log.d(TAG, "onResult: Is Mastercard DEBIT OR CLASSIC? -> " + isMastercardClassic);
+            visaNfcTransceiver = new MyVisaNfcTransceiver(myParserTag);
             visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0).getBytes());
             visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.SELECT,
-//                    TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()),
-                    TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()),
+                    TransformUtils.hexStringToByteArray(AidMasterCardEnum.MASTER_CARD_CREDIT_DEBIT_GLOBAL.getAidValue()),
+//                    TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()),
                     0).getBytes());
             visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.GPO, new byte[]{(byte) 0x083, (byte) 0x00}, 0).getBytes());
             visaNfcTransceiver.transceive(new CommandApdu(CommandEnum.READ_RECORD).getBytes());

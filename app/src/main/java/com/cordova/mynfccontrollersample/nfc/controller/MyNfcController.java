@@ -104,11 +104,12 @@ public class MyNfcController implements INfcController {
      * final Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
      */
     @Override
-    public void activate() {
+    public void activate(String message) {
         final Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
         context.startActivity(intent);
         // Show a Toast to say for user that he'll activate the nfc
-        Toast.makeText(context, "Activate Nfc Here", Toast.LENGTH_SHORT).show();
+        if (message.isEmpty()) message = "Activate NFC here";
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     /**

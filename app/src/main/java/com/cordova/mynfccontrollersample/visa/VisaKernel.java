@@ -99,7 +99,6 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
     @Override
     public void doTransaction(NfcTransceiver nfcTransceiver) {
         boolean continueSelection = true;
-//        int indexCandidate = 0;
         int indexCandidate = 0;
         int limitCandidate = listCandidateAid.size();
         ContactlessResult contactlessResult = null;

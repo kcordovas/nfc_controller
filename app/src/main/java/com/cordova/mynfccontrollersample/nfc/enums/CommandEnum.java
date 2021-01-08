@@ -8,7 +8,6 @@ public enum CommandEnum {
     /**
      * READ RECORD Command
      */
-    // TODO Change Read Record to receiver Parameters
     READ_RECORD(0x00, 0xB2, 0x01, 0x0C),
     /**
      * GPO (GET PROCESSING OPTIONS) Command
