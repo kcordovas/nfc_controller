@@ -9,8 +9,7 @@ import android.util.Log;
 
 import com.cordova.mynfccontrollersample.nfc.controller.INfcController;
 import com.cordova.mynfccontrollersample.nfc.controller.MyNfcController;
-import com.cordova.mynfccontrollersample.nfc.enums.AidMasterCardEnum;
-import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
+import com.cordova.mynfccontrollersample.visa.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.listener.INfcListener;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;

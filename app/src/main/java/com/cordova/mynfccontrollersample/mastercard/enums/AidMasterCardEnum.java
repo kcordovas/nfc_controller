@@ -1,4 +1,4 @@
-package com.cordova.mynfccontrollersample.nfc.enums;
+package com.cordova.mynfccontrollersample.mastercard.enums;
 
 public enum AidMasterCardEnum {
     MASTER_CARD_AID_ALL("A000000004"),

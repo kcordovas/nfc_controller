@@ -1,4 +1,4 @@
-package com.cordova.mynfccontrollersample.nfc.enums;
+package com.cordova.mynfccontrollersample.visa.enums;
 
 /**
  * Enum class to create the AIDs to Visa International

@@ -4,8 +4,8 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
 
-import com.cordova.mynfccontrollersample.nfc.enums.AidMasterCardEnum;
-import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
+import com.cordova.mynfccontrollersample.mastercard.enums.AidMasterCardEnum;
+import com.cordova.mynfccontrollersample.visa.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;

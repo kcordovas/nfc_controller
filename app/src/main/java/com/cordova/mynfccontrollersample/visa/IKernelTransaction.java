@@ -1,8 +1,5 @@
 package com.cordova.mynfccontrollersample.visa;
 
-import android.content.Context;
-
-import com.cordova.mynfccontrollersample.nfc.enums.AidVisaEnum;
 import com.visa.app.ttpkernel.NfcTransceiver;
 
 public interface IKernelTransaction<T> {
