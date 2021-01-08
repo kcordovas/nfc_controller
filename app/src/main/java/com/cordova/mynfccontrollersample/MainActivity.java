@@ -9,6 +9,7 @@ import android.util.Log;
 import com.cordova.mynfccontrollersample.nfc.controller.INfcController;
 import com.cordova.mynfccontrollersample.nfc.controller.INfcViewer;
 import com.cordova.mynfccontrollersample.nfc.controller.MyNfcController;
+import com.cordova.mynfccontrollersample.nfc.services.TimeOutNfcController;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 
 public class MainActivity extends AppCompatActivity implements INfcViewer {
@@ -27,6 +28,10 @@ public class MainActivity extends AppCompatActivity implements INfcViewer {
     protected void onResume() {
         super.onResume();
         myNfcController.foregroundDispatch();
+        if (myNfcController.isEnabled()) {
+            TimeOutNfcController timeOutNfcController = new TimeOutNfcController(2000);
+            timeOutNfcController.start();
+        }
     }
 
     @Override
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements INfcViewer {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        Log.d(TAG, "onNewIntent: " + intent);
         if (intent == null) return;
         myNfcController.getData(intent);
     }
