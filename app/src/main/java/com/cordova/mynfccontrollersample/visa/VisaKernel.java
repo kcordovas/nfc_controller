@@ -3,8 +3,6 @@ package com.cordova.mynfccontrollersample.visa;
 import android.content.Context;
 import android.util.Log;
 
-import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
-import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 import com.cordova.mynfccontrollersample.visa.enums.VisaTerminalEnum;
 import com.visa.app.ttpkernel.ContactlessConfiguration;
@@ -70,11 +68,16 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
         contactlessConfiguration.setTerminalData(terminalData);
     }
 
+    /**
+     * Method to go to a next candidate and set in contacless Configuration
+     * @param nextCandidate is an index that pass to get the element on Candidate list
+     */
     @Override
     public void nextCandidate(int nextCandidate) {
         contactlessConfiguration = ContactlessConfiguration.getInstance();
         HashMap<String, byte[]> terminalMap = contactlessConfiguration.getTerminalData();
         terminalMap.put(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(), listCandidateAid.get(nextCandidate));
+        contactlessConfiguration.setTerminalData(terminalMap);
     }
 
     /**
@@ -88,6 +91,11 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
         }
     }
 
+    /**
+     * Make Transaction, here select of a AID list, chose a AID
+     * to make the transaction
+     * @param nfcTransceiver is the interface that interacts with NFC and Card
+     */
     @Override
     public void doTransaction(NfcTransceiver nfcTransceiver) {
         boolean continueSelection = true;
@@ -118,10 +126,10 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
              */
 
             // TEST
-            contactlessConfiguration = ContactlessConfiguration.getInstance();
+            /*contactlessConfiguration = ContactlessConfiguration.getInstance();
             HashMap<String, byte[]> terminalMap = contactlessConfiguration.getTerminalData();
             terminalMap.put(VisaTerminalEnum.APPLICATION_IDENTIFIER_ADF.getTag(), listCandidateAid.get(indexCandidate));
-            contactlessConfiguration.setTerminalData(terminalMap);
+            contactlessConfiguration.setTerminalData(terminalMap);*/
 
             contactlessResult = contactlessKernel
                     .performTransaction(nfcTransceiver, contactlessConfiguration);
@@ -220,8 +228,6 @@ public class VisaKernel implements IKernelTransaction<TerminalVisaValueMap> {
             Log.d(TAG, "doTransaction: Last Adpu -> " + lastAdpu);
             Log.d(TAG, "doTransaction: Last SW -> " + lastSW);
         }
-
-
 
         nfcTransceiver.destroy();
     }

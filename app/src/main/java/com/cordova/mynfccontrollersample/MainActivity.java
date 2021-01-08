@@ -1,4 +1,4 @@
-package com.cordova.mynfccontrollersample;
+    package com.cordova.mynfccontrollersample;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,7 @@ import com.cordova.mynfccontrollersample.visa.IKernelTransaction;
 import com.cordova.mynfccontrollersample.visa.TerminalVisaValueMap;
 import com.cordova.mynfccontrollersample.visa.VisaKernel;
 import com.cordova.mynfccontrollersample.visa.enums.CityCodeEnum;
+import com.cordova.mynfccontrollersample.visa.enums.TransactionTypeEnum;
 import com.cordova.mynfccontrollersample.visa.enums.VisaTerminalEnum;
 import com.cordova.mynfccontrollersample.visa.nfc.MyVisaNfcTransceiver;
 import com.visa.app.ttpkernel.NfcTransceiver;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements INfcListener {
                 // https://cert.api2.heartlandportico.com/Gateway/PorticoDevGuide/build/PorticoDeveloperGuide/PDL%20Response%20Table%2030%20-%20Terminal%20Data.html
                 new TerminalVisaValueMap(VisaTerminalEnum.TERMINAL_TYPE.getTag(), new byte[]{0x22}),
                 // Transaction type
-                new TerminalVisaValueMap(VisaTerminalEnum.TRANSACTION_TYPE.getTag(), new byte[]{0x00}),
+                new TerminalVisaValueMap(VisaTerminalEnum.TRANSACTION_TYPE.getTag(), TransactionTypeEnum.PURCHASE.getValue()),
                 // TTQ
                 // https://www.eftlab.com/the-use-of-ctqs-and-ttqs-in-nfc-transactions/
                 // https://stackoverflow.com/questions/55337693/generate-get-processing-options-gpo-for-emv-card-apdu-by-pdol
