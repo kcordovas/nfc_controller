@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.parser.MyParserTag;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
+import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
 
 import java.io.IOException;
 
@@ -38,6 +41,26 @@ public class MyNfcController implements INfcController {
      */
     public MyNfcController(Context context) {
         this.context = context;
+        if (isEnabled()) {
+            final Bundle bundle = new Bundle();
+            bundle.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 5000);
+            mNfcAdapter.enableReaderMode((Activity) context, tag  -> {
+                String[] techList = tag.getTechList();
+                for (String tech: techList) Log.d(TAG, "MyNfcController: " + tech);
+
+                CommandApdu commandApdu = new CommandApdu(CommandEnum.SELECT, CommandApdu.PPSE, 0);
+                MyParserTag parserTag = new MyParserTag(commandApdu);
+                parserTag.tag(tag);
+                try {
+                    byte[] result = parserTag.parser();
+                    nfcListener.onResultNfcData(result);
+//                    Log.d(TAG, "MyNfcController: Result " + TransformUtils.byteArrayToHexString(result));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//            },NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, bundle);
+            },NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, bundle);
+        }
     }
 
     /**
