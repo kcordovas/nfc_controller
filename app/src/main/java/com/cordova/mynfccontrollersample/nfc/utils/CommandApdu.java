@@ -60,6 +60,22 @@ public class CommandApdu {
     }
 
     /**
+     * Constructor to set Command APDU, use when command requires P1 and P2 changeable
+     * @param commandEnum is Enum that only use CLA and INS fields
+     * @param p1 is Parameter one
+     * @param p2 is Parameter two
+     * @param le is the response length
+     */
+    public CommandApdu(final CommandEnum commandEnum, final int p1, final int p2, final int le) {
+        this.mCla = commandEnum.getFieldCLA();
+        this.mIns = commandEnum.getFieldINS();
+        this.mP1 = p1;
+        this.mP2 = p2;
+        this.mLengthE = le;
+        this.isLeUsed = true;
+    }
+
+    /**
      * Method uses to get byte array ADPU command
      * @return byte array
      */

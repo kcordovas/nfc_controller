@@ -8,7 +8,7 @@ public enum CommandEnum {
     /**
      * READ RECORD Command
      */
-    READ_RECORD(0x00, 0xB2, 0x01, 0x0C),
+    READ_RECORD(0x00, 0xB2, 0x00, 0x00),
     /**
      * GPO (GET PROCESSING OPTIONS) Command
      */
