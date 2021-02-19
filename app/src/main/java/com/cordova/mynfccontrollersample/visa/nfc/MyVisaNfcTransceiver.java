@@ -49,8 +49,8 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
                 result = myParserTag.transceive(txData);
             }  else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xB2) {
                 //READ RECORD
-                commandApdu = new CommandApdu(CommandEnum.READ_RECORD);
-                result = myParserTag.transceive(commandApdu.getBytes());
+//                commandApdu = new CommandApdu(CommandEnum.READ_RECORD);
+                result = myParserTag.transceive(txData);
             }
         } catch (IOException e) { e.printStackTrace(); }
 

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -161,6 +162,35 @@ public class MyNfcController implements INfcController {
             mNfcAdapter.disableForegroundDispatch((Activity) context);
         } catch (ClassCastException e) {
             nfcListener.onErrorNfc(e);
+        }
+    }
+
+    /**
+     * Disable the callback on NFC to not detect a Tag when card pass on NFC
+     * This method is used to not disable NFC reader
+     */
+    @Override
+    public void disableListenerOnNfcTag() {
+        if (isEnabled()) {
+            mNfcAdapter.disableReaderMode((Activity) context);
+        }
+    }
+
+    /**
+     * Instance a callback when detect a Tag on NFC and return it
+     * This method functions to Visa cards that in the other form not functions
+     */
+    @Override
+    public void listenerOnNfcTag() {
+        if (isEnabled()) {
+            final Bundle bundle = new Bundle();
+            bundle.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 3000);
+            mNfcAdapter.enableReaderMode((Activity) context, tag  -> {
+                String[] techList = tag.getTechList();
+                for (String tech: techList) Log.d("TAG", "MyNfcController: " + tech);
+                nfcListener.onResult(tag);
+//            },NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, bundle);
+            },NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, bundle);
         }
     }
 

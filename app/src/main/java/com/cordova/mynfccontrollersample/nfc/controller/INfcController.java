@@ -10,4 +10,6 @@ public interface INfcController {
     void foregroundDispatch();
     void getData(Intent intent);
     void disableForegroundDispatch();
+    void disableListenerOnNfcTag();
+    void listenerOnNfcTag();
 }

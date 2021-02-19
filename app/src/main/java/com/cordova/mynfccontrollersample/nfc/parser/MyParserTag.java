@@ -5,7 +5,6 @@ import android.nfc.tech.IsoDep;
 import android.util.Log;
 
 import com.cordova.mynfccontrollersample.mastercard.enums.AidMasterCardEnum;
-import com.cordova.mynfccontrollersample.visa.enums.AidVisaEnum;
 import com.cordova.mynfccontrollersample.nfc.enums.CommandEnum;
 import com.cordova.mynfccontrollersample.nfc.utils.CommandApdu;
 import com.cordova.mynfccontrollersample.nfc.utils.TransformUtils;
@@ -107,20 +106,4 @@ public class MyParserTag implements IParserTag {
         if (isoDep == null) return;
         isoDep.close();
     }
-
-    /*
-    /**
-     * Verify if the result is a Visa Card
-     * @return true if is Visa and false if not
-     */
-    /*
-    @Override
-    public boolean isVisaCard() {
-        if (parseData == null) throw new NullPointerException();
-        String res = TransformUtils.byteArrayToHexString(parseData);
-        return res.contains(AidVisaEnum.VISA_ALL_AID.getAidValue()) &&
-                !res.contains(AidVisaEnum.VISA_GP_CARD_MANAGER.getAidValue());
-    }
-
-     */
 }
