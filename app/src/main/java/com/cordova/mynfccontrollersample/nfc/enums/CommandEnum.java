@@ -16,7 +16,7 @@ public enum CommandEnum {
     /**
      * GET DATA Command
      */
-    GET_DATA(0x80, 0xCA, 0x04, 0x00),
+    GET_DATA(0x80, 0xCA, 0x00, 0x00),
     /**
      * GET RESPONSE Command
      */

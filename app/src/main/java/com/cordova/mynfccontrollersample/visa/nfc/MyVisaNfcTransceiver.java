@@ -32,24 +32,16 @@ public class MyVisaNfcTransceiver implements NfcTransceiver {
             } else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xA4) {
                 // SELECT AID
                 if ((txData[4] == (byte)0x07) || (txData[4] == (byte)0x08) || (txData[4] == (byte)0x09)) {
-                    /*
-                    commandApdu = new CommandApdu(CommandEnum.SELECT,
-                            TransformUtils.hexStringToByteArray(AidVisaEnum.VISA_DEBIT_CREDIT_CLASSIC.getAidValue()),
-                            0);
-                    result = mIsoDep.transceive(commandApdu.getBytes());
-                     */
                     result = myParserTag.transceive(txData);
                 }
             } else if (txData[0] == (byte)0x80 && txData[1] == (byte)0xA8 && txData[2] == (byte)0x00) {
                 // GPO
-                /*
-                commandApdu = new CommandApdu(CommandEnum.GPO, new byte[]{(byte) 0x083, (byte) 0x00}, 0);
-                result = mIsoDep.transceive(commandApdu.getBytes());
-                 */
                 result = myParserTag.transceive(txData);
             }  else if (txData[0] == (byte)0x00 && txData[1] == (byte)0xB2) {
                 //READ RECORD
-//                commandApdu = new CommandApdu(CommandEnum.READ_RECORD);
+                result = myParserTag.transceive(txData);
+            } else {
+                // OTHER COMMANDS, e.g. GET DATA
                 result = myParserTag.transceive(txData);
             }
         } catch (IOException e) { e.printStackTrace(); }
