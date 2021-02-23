@@ -38,4 +38,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 //    implementation files('libs/TTPKernelv2-full-release.aar')
     implementation fileTree(include: ['TTPKernelv2-full-release.aar'], dir: 'libs')
+//    implementation(name: 'VisaSensoryBranding', ext: 'aar')
+    implementation project(path: ':VisaSensoryBranding')
 }

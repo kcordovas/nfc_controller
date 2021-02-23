@@ -12,6 +12,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/TTPKernelv2-full-release" />
+            <option value="$PROJECT_DIR$/VisaSensoryBranding" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
